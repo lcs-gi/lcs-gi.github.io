@@ -1,0 +1,16 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.lcsgi.quizzinsolite",
+      "sha256_cert_fingerprints": [
+        "59:3B:69:2B:EF:B3:5F:13:9E:CB:C3:FF:18:DB:7C:9A:32:D8:D7:7C:A9:F6:9A:14:94:A7:55:DC:DB:D3:C5:1C",
+        "D8:23:EC:4B:73:ED:70:7B:45:00:C2:50:F7:C2:79:E1:05:64:49:5E:82:E0:03:FA:FA:12:4D:4A:EF:18:84:AE",
+        "59:61:7A:35:FA:6A:EA:5D:74:2B:18:AD:5F:0B:06:B8:97:D7:A3:DB:6E:FA:43:06:01:C4:7F:DF:1F:31:34:FD"
+      ]
+    }
+  }
+]

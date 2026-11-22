@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="robots" content="noindex">
+<title>Quizz Insolite</title>
+<style>
+  :root { --bg:#fbf6ec; --ink:#2b2622; --soft:#6b6157; --accent:#3b5bdb; --card:#fff; --line:#2b2622; --yellow:#ffd54a; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#1d1a17; --ink:#f3ece0; --soft:#b9ad9e; --accent:#8fa5ff; --card:#2a2622; --line:#f3ece0; --yellow:#e7b82c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width:30rem; margin:0 auto; padding:24px 16px 40px; }
+  h1 { font-size:1.7rem; margin:0 0 4px; }
+  .lead { color:var(--soft); margin:0 0 20px; }
+  section { background:var(--card); border:2px solid var(--line); border-radius:14px; padding:16px; margin:0 0 14px; }
+  h2 { font-size:1.05rem; margin:0 0 10px; }
+  .btn { display:block; width:100%; min-height:48px; padding:12px 16px; margin:8px 0 0; border:2px solid var(--line); border-radius:12px;
+         background:var(--card); color:var(--ink); font:inherit; font-weight:700; text-align:center; text-decoration:none; cursor:pointer; }
+  .btn.primary { background:var(--yellow); color:#2b2622; }
+  .btn:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+  .note { color:var(--soft); font-size:.95rem; margin:12px 0 0; }
+  footer { color:var(--soft); font-size:.9rem; text-align:center; margin-top:20px; }
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title">Quizz Insolite challenge</h1>
+  <p class="lead" id="lead">A friend challenges you on Quizz Insolite.</p>
+
+  <section>
+    <h2 id="step1">1. Install the app</h2>
+    <a class="btn primary" id="play" href="https://play.google.com/store/apps/details?id=com.lcsgi.quizzinsolite" rel="noopener">Google Play</a>
+  </section>
+
+  <section>
+    <h2 id="step2">2. Open the link again</h2>
+    <p class="note" id="installed" style="margin-top:0">Already installed?</p>
+    <a class="btn" id="open" href="#">Open in the app</a>
+    <button class="btn" id="copy" type="button">Copy the link</button>
+    <p class="note" id="paste">Or paste it in the app: Challenges &gt; Paste a link.</p>
+  </section>
+
+  <footer id="privacy">This page sends nothing: the challenge stays in the link.</footer>
+</main>
+
+<script>
+(function () {
+  var PACKAGE = "com.lcsgi.quizzinsolite";
+  var PLAY = "https://play.google.com/store/apps/details?id=" + PACKAGE;
+
+  var T = {
+    en: {
+      title: "Quizz Insolite challenge",
+      lead: "A friend challenges you on Quizz Insolite.",
+      step1: "1. Install the app",
+      play: "Google Play",
+      step2: "2. Open the link again",
+      installed: "Already installed?",
+      open: "Open in the app",
+      copy: "Copy the link",
+      copied: "Copied",
+      paste: "Or paste it in the app: Challenges > Paste a link.",
+      privacy: "This page sends nothing: the challenge stays in the link."
+    },
+    fr: {
+      title: "Défi Quizz Insolite",
+      lead: "Un ami te défie sur Quizz Insolite.",
+      step1: "1. Installe l’appli",
+      play: "Google Play",
+      step2: "2. Rouvre le lien",
+      installed: "Déjà installée ?",
+      open: "Ouvrir dans l’appli",
+      copy: "Copier le lien",
+      copied: "Copié",
+      paste: "Ou colle-le dans l’appli : Défis > Coller un lien.",
+      privacy: "Cette page n’envoie rien : le défi reste dans le lien."
+    }
+  };
+
+  var lang = /^fr/i.test(navigator.language || "") ? "fr" : "en";
+  var t = T[lang];
+  document.documentElement.lang = lang;
+  document.title = t.title;
+  function set(id, text) { document.getElementById(id).textContent = text; }
+  set("title", t.title); set("lead", t.lead); set("step1", t.step1); set("play", t.play);
+  set("step2", t.step2); set("installed", t.installed); set("open", t.open);
+  set("copy", t.copy); set("paste", t.paste); set("privacy", t.privacy);
+
+  // Les donnees du defi sont apres le # : le navigateur ne les envoie jamais au serveur, et cette page
+  // n'en fait aucun usage autre que de les recopier dans le lien ouvert ou copie.
+  var hash = location.hash || "";
+  var base = "lcs-gi.github.io/QuizzInsolite/duel/";
+
+  // Android (Chrome) : ouvre l'appli si elle est installee, sinon la fiche Google Play.
+  document.getElementById("open").href =
+    "intent://" + base + hash + "#Intent;scheme=https;package=" + PACKAGE +
+    ";S.browser_fallback_url=" + encodeURIComponent(PLAY) + ";end";
+
+  var copyBtn = document.getElementById("copy");
+  copyBtn.addEventListener("click", function () {
+    var link = location.href;
+    function done() {
+      copyBtn.textContent = t.copied;
+      setTimeout(function () { copyBtn.textContent = t.copy; }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(done, fallback);
+    } else {
+      fallback();
+    }
+    function fallback() {
+      var area = document.createElement("textarea");
+      area.value = link;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      try { if (document.execCommand("copy")) done(); } catch (e) {}
+      document.body.removeChild(area);
+    }
+  });
+})();
+</script>
+</body>
+</html>
